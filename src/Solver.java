@@ -3,7 +3,8 @@ import java.util.Scanner;
 
 public class Solver {
 	public Solver(Board board){
-	 	Action result = decide(Player.Max, board, 0);
+		autoPlay(board, Player.Max);
+	 	//Action result = decide(Player.Max, board, 0);
 	 	/*System.out.println(result.getScore());
 	 	System.out.println(result.getBoard());*/
 	}
@@ -22,9 +23,13 @@ public class Solver {
 			}
 			return;
 		}
-		/*if (player == player.Max){
-			
-		}*/
+		if (player == player.Max){
+			Action result = decide(player.Max, board, 0);
+			autoPlay(result.getBoard(), player.Min);
+		}else{
+			Action result = decide(player.Min, board, 0);
+			autoPlay(result.getBoard(), player.Max);
+		}
 		
 	}
 	public Action decide(Player player, Board board, int level){
@@ -36,10 +41,10 @@ public class Solver {
 		if (player == Player.Max){
 			for (Board neighbour : board.getNeighbours(player)){				
 				Action action = decide(Player.Min, neighbour, level + 1);
-				if (level == 0) {
+				/*if (level == 0) {
 					System.out.print(neighbour);
 					System.out.println(action.getScore());
-				}
+				}*/
 				if (currentAction == null){
 					currentAction = new Action(neighbour, action.getScore());
 				}else if (action.getScore() > currentAction.getScore()){
