@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Solver {
@@ -64,6 +65,24 @@ public class Solver {
 		return currentAction;
 	}
 	public static void main(String... s){
+		// readGame(s);
+		randomGame();		
+	}
+	private static void randomGame(){
+		int[][] squares = new int[3][3];
+		for (int i = 0; i < 3; i++){
+			for (int j = 0; j < 3; j++){
+				squares[i][j] = Board.NAN;
+			}
+		}
+		int num = new Random().nextInt(9);		
+		int row = num / 3;
+		int col = num % 3;
+		squares[row][col] = Board.CROSS;
+		Board board = new Board(squares);		
+		new Solver(board);
+	}
+	private static void readGame(String... s) {
 		try {
 			Scanner scanner = new Scanner(new File(s[0]));
 			int size = scanner.nextInt();
@@ -77,6 +96,6 @@ public class Solver {
 			scanner.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}		
+		}
 	}
 }
