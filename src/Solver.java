@@ -50,7 +50,7 @@ public class Solver {
 			Action act = null;
 			for (Board child : board.getNeighbours(player)){
 				Action action = minimax(Player.Min, child);
-				if (act == null) act = action;
+				if (act == null) act = new Action(child, action.getScore());
 				else if (action.getScore() > act.getScore()) act = new Action(child, action.getScore());
 			}
 			return act;
@@ -58,7 +58,7 @@ public class Solver {
 			Action act = null;
 			for (Board child : board.getNeighbours(player)){
 				Action action = minimax(Player.Max, child);
-				if (act == null) act = action;
+				if (act == null) act = new Action(child, action.getScore());
 				else if (action.getScore() < act.getScore()) act = new Action(child, action.getScore());
 			}
 			return act;
