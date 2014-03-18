@@ -8,13 +8,30 @@ public class Solver {
 	 	//Action result = decide(Player.Min, board, 0);
 		//Action result = decide(Player.Max, board, 0);
 		//Action result = decideAlphaBeta(Player.Max, board, Integer.MAX_VALUE, Integer.MIN_VALUE, 0);
-		Action result = minimax(Player.Min, board);
+		System.out.println("MiniMax");
+		Action result = minimax(Player.Max, board);
 		System.out.println(result.getScore());
 	 	System.out.println(result.getBoard());
 	 	
-		Action result2 = decide(Player.Min, board, 0);
+	 	System.out.println("MiniMax discreet");
+		System.out.println(minimax2(Player.Max, board));
+		
+		//System.out.println("MiniMax ab");
+		//System.out.println(minimax2alphabeta(Player.Max, board, Integer.MIN_VALUE, Integer.MAX_VALUE));
+		
+		System.out.println("MiniMax ab");
+		Action result4 = minimax2alphabeta(Player.Max, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		System.out.println(result4.getScore());
+		System.out.println(result4.getBoard());
+	 	
+	 	/*System.out.println("MiniMax with Alpha Beta");
+		Action result3 = minimax(Player.Min, board, Integer.MAX_VALUE, Integer.MIN_VALUE);
+		System.out.println(result3.getScore());
+	 	System.out.println(result3.getBoard()); */
+	 	
+		/*Action result2 = decide(Player.Min, board, 0);
 	 	System.out.println(result2.getScore());
-	 	System.out.println(result2.getBoard());
+	 	System.out.println(result2.getBoard());*/
 	}
 	public void autoPlay(Board board, Player player){
 		if (board.isComplete()){
@@ -65,37 +82,95 @@ public class Solver {
 		}
 	}
 	
+	public int minimax2(Player player, Board board){
+		int score = board.getUtility();
+		if (score != Integer.MAX_VALUE) return score;
+		if (player == Player.Max){
+			int val = Integer.MIN_VALUE;
+			for (Board child : board.getNeighbours(player)){
+				val = Math.max(val, minimax2(Player.Min, child));
+			}
+			return val;
+		}else{
+			int val = Integer.MAX_VALUE;
+			for (Board child : board.getNeighbours(player)){
+				val = Math.min(val, minimax2(Player.Max, child));
+			}
+			return val;
+		}
+	}
+	
+	public Action minimax2alphabeta(Player player, Board board, int alpha, int beta){
+		int score = board.getUtility();
+		if (score != Integer.MAX_VALUE) return new Action(board, score);
+		if (player == Player.Max){
+			int val = Integer.MIN_VALUE;
+			Action result = null;
+			for (Board child : board.getNeighbours(player)){
+				val = Math.max(val, minimax2(Player.Min, child));
+				result = new Action(child, val);
+				if (val >= beta) {
+					return result;
+				}
+				alpha = Math.max(alpha, val);
+			}
+			return result;
+		}else{
+			int val = Integer.MAX_VALUE;
+			Action result = null;
+			for (Board child : board.getNeighbours(player)){
+				val = Math.min(val, minimax2(Player.Max, child));
+				result = new Action(child, val);
+				if (val <= alpha) return result;
+				beta = Math.min(beta, val);
+			}
+			return result;
+		}
+	}
+	
 	public Action minimax(Player player, Board board, int alpha, int beta){
 		int score = board.getUtility();
 		if (score != Integer.MAX_VALUE) {
 			return new Action(board, score);
 		}
 		if (player == Player.Max){
-			Action act = null;
+			Action act = new Action(null, beta);
 			for (Board child : board.getNeighbours(player)){
-				Action action = minimax(Player.Min, child, act == null ? Integer.MIN_VALUE : act.getScore(), alpha);
-				if (act == null) act = action;
-				else if (action.getScore() > act.getScore()) act = new Action(child, action.getScore());
+				Action action = minimax(Player.Min, child, act.getScore(), alpha);
+				if (act.getBoard() == null) act = new Action(child, action.getScore());
+				if (action.getScore() > act.getScore()) act = new Action(child, action.getScore());
 				if(act.getScore() > alpha) {
-					System.out.println("Pruned Alpha");
-					return act;
+					//System.out.println(act.getScore());
+					//System.out.println("Pruned Alpha");					
+					return new Action(child, alpha);
 				}
 			}
 			return act;
 		}else{
-			Action act = null;
+			Action act = new Action(null, alpha);
 			for (Board child : board.getNeighbours(player)){
-				Action action = minimax(Player.Min, child, beta, act == null ? Integer.MAX_VALUE : act.getScore());
-				if (act == null) act = action;
-				else if (action.getScore() < act.getScore()) act = new Action(child, action.getScore());
+				Action action = minimax(Player.Max, child, beta, act.getScore());
+				if (act.getBoard() == null) act = new Action(child, action.getScore());
+				if (action.getScore() < act.getScore()) act = new Action(child, action.getScore());
 				if (act.getScore() < beta) {
-					System.out.println("Pruned Beta");
-					return act;
+					//System.out.println(act.getScore());
+					//System.out.println("Pruned Beta");					
+					return new Action(child, beta);
 				}
 			}
 			return act;
 		}
 	}
+	
+	/*public Action minimax2(Player player, Board board, int alpha, int beta){
+		int score = board.getUtility();
+		if (score != Integer.MAX_VALUE) {
+			return new Action(board, score);
+		}
+		if (player == Player.Max){
+			
+		}
+	}*/
 	
 	public Action decide(Player player, Board board, int level){
 		int score = board.getUtility();
@@ -129,8 +204,8 @@ public class Solver {
 		return currentAction;
 	}
 	public static void main(String... s){
-		//readGame(s);
-		randomGame();		
+		readGame(s);
+		//randomGame();		
 	}
 	private static void randomGame(){
 		int[][] squares = new int[3][3];
