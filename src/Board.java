@@ -24,7 +24,7 @@ public class Board {
 			for (int j = 0; j < squares[0].length; j++){
 				if (squares[i][j] == -1){
 					int[][] copy = copySquares();
-					copy[i][j] = player == player.Max ? 1 : 2;					
+					copy[i][j] = player == Player.Max ? 1 : 2;					
 					neighbours.add(new Board(copy));
 				}
 			}
