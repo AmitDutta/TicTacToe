@@ -13,8 +13,6 @@ public class Solver {
 		System.out.println(result.getScore());
 	 	System.out.println(result.getBoard());
 	 	
-	 	System.out.println("MiniMax discreet");
-		System.out.println(minimax2(Player.Max, board));
 		
 		//System.out.println("MiniMax ab");
 		//System.out.println(minimax2alphabeta(Player.Max, board, Integer.MIN_VALUE, Integer.MAX_VALUE));
@@ -107,9 +105,10 @@ public class Solver {
 			int val = Integer.MIN_VALUE;
 			Action result = null;
 			for (Board child : board.getNeighbours(player)){
-				val = Math.max(val, minimax2(Player.Min, child));
+				val = Math.max(val, minimax2alphabeta(Player.Min, child, alpha, beta).getScore());
 				result = new Action(child, val);
 				if (val >= beta) {
+					System.out.println("alpha prun");
 					return result;
 				}
 				alpha = Math.max(alpha, val);
@@ -119,9 +118,12 @@ public class Solver {
 			int val = Integer.MAX_VALUE;
 			Action result = null;
 			for (Board child : board.getNeighbours(player)){
-				val = Math.min(val, minimax2(Player.Max, child));
+				val = Math.min(val, minimax2alphabeta(Player.Max, child, alpha, beta).getScore());
 				result = new Action(child, val);
-				if (val <= alpha) return result;
+				if (val <= alpha){
+					System.out.println("beta prun");
+					return result;
+				}
 				beta = Math.min(beta, val);
 			}
 			return result;
